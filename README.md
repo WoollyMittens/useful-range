@@ -2,7 +2,7 @@
 
 An alternative for the HTML5 range input element.
 
-Try the <a href="http://www.woollymittens.nl/useful/default.php?url=range">demo</a>.
+Try the <a href="http://www.woollymittens.nl/useful/default.php?url=useful-range">demo</a>.
 
 ## How to include the script
 
