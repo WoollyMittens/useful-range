@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>useful.color.js: Range Selector</title>
+		<title>useful-color.js: Range Selector</title>
 		<style>
 			html { font-family:Sans-Serif; font-size:75%; height:100%; }
 			body { _height:100%; line-height:180%; margin:0; min-height:100%; padding:1%; }
@@ -15,7 +15,7 @@
 			<meta http-equiv="imagetoolbar" content="no"/>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
             <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
 		<![endif]-->
 	</head>
 	<body>
@@ -28,14 +28,14 @@
 			<aside>
 
 				<!-- Cut below this -->
-				<style>@import url("./css/range.css")</style>
+				<style>@import url("./css/useful-range.css")</style>
 				<form>
 					<label>
 						Range - <span id="examplerange_output">0</span>:
 						<input name="examplerange" pattern="^.+$" class="range" type="range" title="Pick a range" value=""  min="0" max="100"/>
 					</label>
 				</form>
-				<script src="./js/range.min.js"></script>
+				<script src="./js/useful-range.js"></script>
 				<script>
 					// example event handler
 					updateValue = function (event, element) {element = element || this; element.value = element.value || 0; document.getElementById('examplerange_output').innerHTML = parseInt(element.value);}
