@@ -1,62 +1,6 @@
 /*
 	Source:
-	van Creij, Maurice (2012). "useful.instances.js: A library of useful functions to ease working with instances of constructors.", version 20121126, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// public object
-var useful = useful || {};
-
-(function(){
-
-	// Invoke strict mode
-	"use strict";
-
-	// public functions
-	useful.Instances = function (objs, constructor, cfg) {
-		// properties
-		this.objs = objs;
-		this.constructor = constructor;
-		this.cfg = cfg;
-		this.constructs = [];
-		// starts and stores an instance of the constructor for every element
-		this.start = function () {
-			for (var a = 0, b = this.objs.length; a < b; a += 1) {
-				// store a constructed instance with cloned cfg object
-				this.constructs[a] = new this.constructor(this.objs[a], Object.create(this.cfg));
-			}
-			// disable the start function so it can't be started twice
-			this.start = function () {};
-			// empty the timeout
-			return null;
-		};
-		// returns the constructs
-		this.getAll = function () {
-			return this.constructs;
-		};
-		// returns the object that goes with the element
-		this.getByObject = function (element) {
-			return this.constructs[this.constructs.indexOf(element)];
-		};
-		// returns the object that goes with the index
-		this.getByIndex = function (index) {
-			return this.constructs[index];
-		};
-		this.start();
-	};
-
-	// return as a require.js module
-	if (typeof module !== 'undefined') {
-		exports = module.exports = useful.Instances;
-	}
-
-})();
-
-/*
-	Source:
-	van Creij, Maurice (2012). "useful.polyfills.js: A library of useful polyfills to ease working with HTML5 in legacy environments.", version 20121126, http://www.woollymittens.nl/.
+	van Creij, Maurice (2014). "useful.polyfills.js: A library of useful polyfills to ease working with HTML5 in legacy environments.", version 20141127, http://www.woollymittens.nl/.
 
 	License:
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -336,7 +280,7 @@ var useful = useful || {};
 
 /*
 	Source:
-	van Creij, Maurice (2012). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20121126, http://www.woollymittens.nl/.
+	van Creij, Maurice (2014). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20141127, http://www.woollymittens.nl/.
 
 	License:
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -443,173 +387,472 @@ var useful = useful || {};
 })();
 
 /*
+
 	Source:
-	van Creij, Maurice (2012). "useful.range.js: Range input element", version 20130510, http://www.woollymittens.nl/.
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
 
 	License:
+
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
 */
 
-// public object
+
+
+// create the constructor if needed
+
 var useful = useful || {};
 
-(function(){
+useful.Range = useful.Range || function () {};
 
-	// invoke strict mode
+
+
+// extend the constructor
+
+useful.Range.prototype.Events = function (parent) {
+
+	// properties
+
 	"use strict";
 
-	// private functions
-	useful.Range = function (obj, cfg) {
-		this.obj = obj;
-		this.cfg = cfg;
-		// update cascade
-		this.start = function () {
-			var context = this;
-			// build the interface
-			context.setup(context);
-			// start the updates
-			context.update(context);
-			// disable the start function so it can't be started twice
-			this.start = function () {};
-		};
-		this.setup = function (context) {
-			// set the initial value, if there isn't one
-			context.obj.value = context.obj.value || 0;
-			// measure the dimensions of the parent element if they are not given
-			context.cfg.width = context.cfg.width || context.obj.offsetWidth;
-			context.cfg.height = context.cfg.height || context.obj.offsetHeight;
-			// create a container around the element
-			context.cfg.container = document.createElement('span');
-			context.cfg.container.className = 'range';
-			// add the container into the label
-			context.obj.parentNode.insertBefore(context.cfg.container, context.obj);
-			// move the input element into the container
-			context.cfg.container.appendChild(context.obj.parentNode.removeChild(context.obj));
-			// add the range rails
-			context.cfg.rails = document.createElement('span');
-			context.cfg.rails.className = 'range_rails';
-			context.cfg.container.appendChild(context.cfg.rails);
-			// add the range button
-			context.cfg.button = document.createElement('span');
-			context.cfg.button.className = 'range_button range_passive';
-			context.cfg.container.appendChild(context.cfg.button);
-			// set the event handler
-			context.events.mouse(context.cfg.container, context);
-			// check of changes
-			clearInterval(context.cfg.interval);
-			context.cfg.interval = setInterval(function () {
-				context.update(context);
-			}, 500);
-		};
-		this.update = function (context) {
-			var min, max, value, steps, range;
-			// get the attributes from the input element
-			min = parseFloat(context.obj.getAttribute('min')) || 0;
-			max = parseFloat(context.obj.getAttribute('max')) || 1;
-			steps = parseFloat(context.obj.getAttribute('steps')) || 0;
-			range = max - min;
-			// get the offset of the element
-			context.cfg.offset = useful.positions.object(context.cfg.container);
-			// get the existing value or the fresh input
-			value = (context.cfg.x === null) ?
-				parseFloat(context.obj.value) :
-				(context.cfg.x - context.cfg.offset.x) / context.cfg.container.offsetWidth * range + min;
-			// apply any steps to the value
-			if (steps) {
-				var rounding;
-				rounding = value % steps;
-				value = (rounding > steps / 2) ?
-					value + (steps - rounding) :
-					value - rounding;
-			}
-			// normalize the value
-			if (value < min) {
-				value = min;
-			}
-			if (value > max) {
-				value = max;
-			}
-			// set the button position
-			context.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
-			// update the title
-			if (context.cfg.title) {
-				context.cfg.container.setAttribute('title', context.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
-			}
-			// update the value
-			context.obj.value = value;
-			// trigger any onchange event
-			if (context.cfg.x !== null) {
-				var evt = document.createEvent('HTMLEvents');
-				evt.initEvent('change', false, true);
-				context.obj.dispatchEvent(evt);
-			}
-		};
-		this.events = {};
-		this.events.mouse = function (element, context) {
-			// initialise coordinates
-			context.cfg.x = null;
-			context.cfg.reset = null;
-			// mouse escapes the element
-			element.onmouseout = function () {
-				// cancel the previous reset timeout
-				clearTimeout(context.cfg.reset);
-				// set the reset timeout
-				context.cfg.reset = setTimeout(function () {
-					// cancel the interaction
-					context.cfg.x = null;
-					context.cfg.motion = false;
-					// deactivate the button
-					context.cfg.button.className = context.cfg.button.className.replace('_active', '_passive');
-				}, 100);
-			};
-			element.onmouseover = function () {
-				// cancel the previous reset timeout
-				clearTimeout(context.cfg.reset);
-			};
-			// mouse gesture controls
-			element.onmousedown = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// store the touch positions
-				context.cfg.x = event.pageX || (event.x + context.cfg.offset.x);
-				// activate the button
-				context.cfg.button.className = context.cfg.button.className.replace('_passive', '_active');
-				// update the value
-				context.update(context);
-				// cancel the click
-				return false;
-			};
-			element.onmousemove = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// if the gesture is active
-				if (context.cfg.x !== null) {
-					// store the touch positions
-					context.cfg.x = event.pageX || (event.x + context.cfg.offset.x);
-					// update the value
-					context.update(context);
-				}
-				// cancel the click
-				return false;
-			};
-			element.onmouseup = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// reset the interaction
-				context.cfg.x = null;
+	this.parent = parent;
+
+	this.cfg = parent.cfg;
+
+	// methods
+
+	this.mouse = function () {
+
+		var _this = this, element = this.cfg.container;
+
+		// initialise coordinates
+
+		this.cfg.x = null;
+
+		this.cfg.reset = null;
+
+		// mouse escapes the element
+
+		element.onmouseout = function () {
+
+			// cancel the previous reset timeout
+
+			clearTimeout(_this.cfg.reset);
+
+			// set the reset timeout
+
+			_this.cfg.reset = setTimeout(function () {
+
+				// cancel the interaction
+
+				_this.cfg.x = null;
+
+				_this.cfg.motion = false;
+
 				// deactivate the button
-				context.cfg.button.className = context.cfg.button.className.replace('_active', '_passive');
-				// cancel the click
-				return false;
-			};
+
+				_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+
+			}, 100);
+
 		};
-		// go
-		this.start();
+
+		element.onmouseover = function () {
+
+			// cancel the previous reset timeout
+
+			clearTimeout(_this.cfg.reset);
+
+		};
+
+		// mouse gesture controls
+
+		element.onmousedown = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// store the touch positions
+
+			_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+
+			// activate the button
+
+			_this.cfg.button.className = _this.cfg.button.className.replace('_passive', '_active');
+
+			// update the value
+
+			_this.parent.update();
+
+			// cancel the click
+
+			return false;
+
+		};
+
+		element.onmousemove = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// if the gesture is active
+
+			if (_this.cfg.x !== null) {
+
+				// store the touch positions
+
+				_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+
+				// update the value
+
+				_this.parent.update();
+
+			}
+
+			// cancel the click
+
+			return false;
+
+		};
+
+		element.onmouseup = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// reset the interaction
+
+			_this.cfg.x = null;
+
+			// deactivate the button
+
+			_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+
+			// cancel the click
+
+			return false;
+
+		};
+
 	};
 
-	// return as a require.js module
-	if (typeof module !== 'undefined') {
-		exports = module.exports = useful.Range;
-	}
+	// go
 
-})();
+	this.mouse();
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+
+
+/*
+
+	Source:
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+	License:
+
+	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Range = useful.Range || function () {};
+
+
+
+// extend the constructor
+
+useful.Range.prototype.Main = function (parent, cfg) {
+
+	// properties
+
+	"use strict";
+
+	this.parent = parent;
+
+	this.cfg = cfg;
+
+	this.obj = cfg.element;
+
+	// methods
+
+	this.start = function () {
+
+		// build the interface
+
+		this.setup();
+
+		// start the updates
+
+		this.update();
+
+	};
+
+	this.setup = function () {
+
+		// set the initial value, if there isn't one
+
+		this.obj.value = this.obj.value || 0;
+
+		// measure the dimensions of the parent element if they are not given
+
+		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
+
+		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+
+		// create a container around the element
+
+		this.cfg.container = document.createElement('span');
+
+		this.cfg.container.className = 'range';
+
+		// add the container into the label
+
+		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+
+		// move the input element into the container
+
+		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+
+		// add the range rails
+
+		this.cfg.rails = document.createElement('span');
+
+		this.cfg.rails.className = 'range_rails';
+
+		this.cfg.container.appendChild(this.cfg.rails);
+
+		// add the range button
+
+		this.cfg.button = document.createElement('span');
+
+		this.cfg.button.className = 'range_button range_passive';
+
+		this.cfg.container.appendChild(this.cfg.button);
+
+		// set the event handler
+
+		this.events = new this.parent.Events(this);
+
+		// check of changes
+
+		clearInterval(this.cfg.interval);
+
+		var _this = this;
+
+		this.cfg.interval = setInterval(function () {
+
+			_this.update();
+
+		}, 500);
+
+	};
+
+	this.update = function () {
+
+		var min, max, value, steps, range;
+
+		// get the attributes from the input element
+
+		min = parseFloat(this.obj.getAttribute('min')) || 0;
+
+		max = parseFloat(this.obj.getAttribute('max')) || 1;
+
+		steps = parseFloat(this.obj.getAttribute('steps')) || 0;
+
+		range = max - min;
+
+		// get the offset of the element
+
+		this.cfg.offset = useful.positions.object(this.cfg.container);
+
+		// get the existing value or the fresh input
+
+		value = (this.cfg.x === null) ?
+
+			parseFloat(this.obj.value) :
+
+			(this.cfg.x - this.cfg.offset.x) / this.cfg.container.offsetWidth * range + min;
+
+		// apply any steps to the value
+
+		if (steps) {
+
+			var rounding;
+
+			rounding = value % steps;
+
+			value = (rounding > steps / 2) ?
+
+				value + (steps - rounding) :
+
+				value - rounding;
+
+		}
+
+		// normalize the value
+
+		if (value < min) {
+
+			value = min;
+
+		}
+
+		if (value > max) {
+
+			value = max;
+
+		}
+
+		// set the button position
+
+		this.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
+
+		// update the title
+
+		if (this.cfg.title) {
+
+			this.cfg.container.setAttribute('title', this.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
+
+		}
+
+		// update the value
+
+		this.obj.value = value;
+
+		// trigger any onchange event
+
+		if (this.cfg.x !== null) {
+
+			var evt = document.createEvent('HTMLEvents');
+
+			evt.initEvent('change', false, true);
+
+			this.obj.dispatchEvent(evt);
+
+		}
+
+	};
+
+	// go
+
+	this.start();
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+
+
+/*
+
+	Source:
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+	License:
+
+	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Range = useful.Range || function () {};
+
+
+
+// extend the constructor
+
+useful.Range.prototype.init = function (cfg) {
+
+	// properties
+
+	"use strict";
+
+	this.instances = [];
+
+	// methods
+
+	this.each = function (elements, cfg) {
+
+		var _cfg, instance;
+
+		// for all elements
+
+		for (var a = 0, b = elements.length; a < b; a += 1) {
+
+			// clone the configuration
+
+			_cfg = Object.create(cfg);
+
+			// insert the current element
+
+			_cfg.element = elements[a];
+
+			// start a new instance of the object
+
+			this.instances.push(new this.Main(this, _cfg));
+
+		}
+
+	};
+
+	// go
+
+	this.each(cfg.elements, cfg);
+
+	this.init = function () {};
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+

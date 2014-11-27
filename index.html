@@ -43,8 +43,8 @@
 				<script>
 					// example event handler
 					updateValue = function (event, element) {
-						element = element || this; 
-						element.value = element.value || 0; 
+						element = element || this;
+						element.value = element.value || 0;
 						document.getElementById('examplerange_output').innerHTML = parseInt(element.value);
 					}
 					updateValue(null, document.getElementsByName('examplerange')[0]);
@@ -53,14 +53,10 @@
 				<script>
 				//<!--
 					// create new instances of the script
-					var ranges = new useful.Instances(
-						document.querySelectorAll('input.range'),
-						useful.Range,
-						{
-							// information tooltip
-							'title' : '{value}% ({min}-{max})'
-						}
-					);
+					var ranges = new useful.Range().init({
+						'elements' : document.querySelectorAll('input.range'),
+						'title' : '{value}% ({min}-{max})'
+					});
 				//-->
 				</script>
 				<!-- Cut above this -->

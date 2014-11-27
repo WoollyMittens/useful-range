@@ -28,50 +28,19 @@ To enable the use of HTML5 tags in Internet Explorer 8 and lower, include *html5
 
 ## How to start the script
 
-This is the safest way of starting the script, but allows for only one target element at a time.
-
 ```javascript
-var range = new useful.Range( document.getElementById('id'), {
+var ranges = new useful.Range().init({
+	'elements' : document.querySelectorAll('.classname');
 	'title' : '{value}% ({min}-{max})',
 	'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
 });
 ```
 
+**ranges : {array}** - An array of all the instances of the script.
+
 **title : {string}** - The text format of the popup label of the input element.
 
 **support : {boolean}** - A test to determine which browsers have native support for the range input element.
-
-### Using document.querySelectorAll
-
-This method allows CSS Rules to be used to apply the script to one or more nodes at the same time.
-
-```javascript
-var ranges = new useful.Instances(
-	document.querySelectorAll('input.range'),
-	useful.Range,
-	{
-		'title' : '{value}% ({min}-{max})',
-		'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
-	}
-);
-```
-
-The "Instances" function clones the settings for each element in the CSS rule.
-
-### Using jQuery
-
-This method is similar to the previous one, but uses jQuery for processing the CSS rule and cloning the settings.
-
-```javascript
-var ranges = [];
-$('input.range').each(function (index, element) {
-	ranges[index] = new useful.Range( element, {
-		'title' : '{value}% ({min}-{max})',
-		'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
-	});
-	ranges[index].start();
-});
-```
 
 ## How to build the script
 
