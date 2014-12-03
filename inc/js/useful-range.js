@@ -387,472 +387,243 @@ var useful = useful || {};
 })();
 
 /*
-
 	Source:
-
 	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
 
-
-
 	License:
-
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-
 */
 
-
-
 // create the constructor if needed
-
 var useful = useful || {};
-
 useful.Range = useful.Range || function () {};
 
-
-
 // extend the constructor
-
 useful.Range.prototype.Events = function (parent) {
-
 	// properties
-
 	"use strict";
-
 	this.parent = parent;
-
 	this.cfg = parent.cfg;
-
 	// methods
-
 	this.mouse = function () {
-
 		var _this = this, element = this.cfg.container;
-
 		// initialise coordinates
-
 		this.cfg.x = null;
-
 		this.cfg.reset = null;
-
 		// mouse escapes the element
-
 		element.onmouseout = function () {
-
 			// cancel the previous reset timeout
-
 			clearTimeout(_this.cfg.reset);
-
 			// set the reset timeout
-
 			_this.cfg.reset = setTimeout(function () {
-
 				// cancel the interaction
-
 				_this.cfg.x = null;
-
 				_this.cfg.motion = false;
-
 				// deactivate the button
-
 				_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
-
 			}, 100);
-
 		};
-
 		element.onmouseover = function () {
-
 			// cancel the previous reset timeout
-
 			clearTimeout(_this.cfg.reset);
-
 		};
-
 		// mouse gesture controls
-
 		element.onmousedown = function (event) {
-
 			// get the event properties
-
 			event = event || window.event;
-
 			// store the touch positions
-
 			_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
-
 			// activate the button
-
 			_this.cfg.button.className = _this.cfg.button.className.replace('_passive', '_active');
-
 			// update the value
-
 			_this.parent.update();
-
 			// cancel the click
-
 			return false;
-
 		};
-
 		element.onmousemove = function (event) {
-
 			// get the event properties
-
 			event = event || window.event;
-
 			// if the gesture is active
-
 			if (_this.cfg.x !== null) {
-
 				// store the touch positions
-
 				_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
-
 				// update the value
-
 				_this.parent.update();
-
 			}
-
 			// cancel the click
-
 			return false;
-
 		};
-
 		element.onmouseup = function (event) {
-
 			// get the event properties
-
 			event = event || window.event;
-
 			// reset the interaction
-
 			_this.cfg.x = null;
-
 			// deactivate the button
-
 			_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
-
 			// cancel the click
-
 			return false;
-
 		};
-
 	};
-
 	// go
-
 	this.mouse();
-
 };
 
-
-
 // return as a require.js module
-
 if (typeof module !== 'undefined') {
-
 	exports = module.exports = useful.Range;
-
 }
 
-
 /*
-
 	Source:
-
 	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
 
-
-
 	License:
-
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-
 */
 
-
-
 // create the constructor if needed
-
 var useful = useful || {};
-
 useful.Range = useful.Range || function () {};
 
-
-
 // extend the constructor
-
-useful.Range.prototype.Main = function (parent, cfg) {
-
+useful.Range.prototype.Main = function (cfg, parent) {
 	// properties
-
 	"use strict";
-
 	this.parent = parent;
-
 	this.cfg = cfg;
-
 	this.obj = cfg.element;
-
 	// methods
-
 	this.start = function () {
-
 		// build the interface
-
 		this.setup();
-
 		// start the updates
-
 		this.update();
-
 	};
-
 	this.setup = function () {
-
 		// set the initial value, if there isn't one
-
 		this.obj.value = this.obj.value || 0;
-
 		// measure the dimensions of the parent element if they are not given
-
 		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
-
 		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
-
 		// create a container around the element
-
 		this.cfg.container = document.createElement('span');
-
 		this.cfg.container.className = 'range';
-
 		// add the container into the label
-
 		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
-
 		// move the input element into the container
-
 		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
-
 		// add the range rails
-
 		this.cfg.rails = document.createElement('span');
-
 		this.cfg.rails.className = 'range_rails';
-
 		this.cfg.container.appendChild(this.cfg.rails);
-
 		// add the range button
-
 		this.cfg.button = document.createElement('span');
-
 		this.cfg.button.className = 'range_button range_passive';
-
 		this.cfg.container.appendChild(this.cfg.button);
-
 		// set the event handler
-
 		this.events = new this.parent.Events(this);
-
 		// check of changes
-
 		clearInterval(this.cfg.interval);
-
 		var _this = this;
-
 		this.cfg.interval = setInterval(function () {
-
 			_this.update();
-
 		}, 500);
-
 	};
-
 	this.update = function () {
-
 		var min, max, value, steps, range;
-
 		// get the attributes from the input element
-
 		min = parseFloat(this.obj.getAttribute('min')) || 0;
-
 		max = parseFloat(this.obj.getAttribute('max')) || 1;
-
 		steps = parseFloat(this.obj.getAttribute('steps')) || 0;
-
 		range = max - min;
-
 		// get the offset of the element
-
 		this.cfg.offset = useful.positions.object(this.cfg.container);
-
 		// get the existing value or the fresh input
-
 		value = (this.cfg.x === null) ?
-
 			parseFloat(this.obj.value) :
-
 			(this.cfg.x - this.cfg.offset.x) / this.cfg.container.offsetWidth * range + min;
-
 		// apply any steps to the value
-
 		if (steps) {
-
 			var rounding;
-
 			rounding = value % steps;
-
 			value = (rounding > steps / 2) ?
-
 				value + (steps - rounding) :
-
 				value - rounding;
-
 		}
-
 		// normalize the value
-
 		if (value < min) {
-
 			value = min;
-
 		}
-
 		if (value > max) {
-
 			value = max;
-
 		}
-
 		// set the button position
-
 		this.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
-
 		// update the title
-
 		if (this.cfg.title) {
-
 			this.cfg.container.setAttribute('title', this.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
-
 		}
-
 		// update the value
-
 		this.obj.value = value;
-
 		// trigger any onchange event
-
 		if (this.cfg.x !== null) {
-
 			var evt = document.createEvent('HTMLEvents');
-
 			evt.initEvent('change', false, true);
-
 			this.obj.dispatchEvent(evt);
-
 		}
-
 	};
-
 	// go
-
 	this.start();
-
 	return this;
-
 };
 
-
-
 // return as a require.js module
-
 if (typeof module !== 'undefined') {
-
 	exports = module.exports = useful.Range;
-
 }
-
 
 /*
-
 	Source:
-
 	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
 
-
-
 	License:
-
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-
 */
 
-
-
 // create the constructor if needed
-
 var useful = useful || {};
-
 useful.Range = useful.Range || function () {};
 
-
-
 // extend the constructor
-
 useful.Range.prototype.init = function (cfg) {
-
 	// properties
-
 	"use strict";
-
-	this.instances = [];
-
 	// methods
-
-	this.each = function (elements, cfg) {
-
-		var _cfg, instance;
-
-		// for all elements
-
-		for (var a = 0, b = elements.length; a < b; a += 1) {
-
-			// clone the configuration
-
-			_cfg = Object.create(cfg);
-
-			// insert the current element
-
-			_cfg.element = elements[a];
-
-			// start a new instance of the object
-
-			this.instances.push(new this.Main(this, _cfg));
-
-		}
-
+	this.only = function (cfg) {
+		// start an instance of the script
+		return new this.Main(cfg, this);
 	};
-
-	// go
-
-	this.each(cfg.elements, cfg);
-
-	this.init = function () {};
-
-	return this;
-
+	this.each = function (cfg) {
+		var _cfg, instances = [];
+		// for all element
+		for (var a = 0, b = cfg.elements.length; a < b; a += 1) {
+			// clone the cfguration
+			_cfg = Object.create(cfg);
+			// insert the current element
+			_cfg.element = cfg.elements[a];
+			// delete the list of elements from the clone
+			delete _cfg.elements;
+			// start a new instance of the object
+			instances[a] = new this.Main(_cfg, this);
+		}
+		// return the instances
+		return instances;
+	};
+	// return a single or multiple instances of the script
+	return (cfg.elements) ? this.each(cfg) : this.only(cfg);
 };
 
-
-
 // return as a require.js module
-
 if (typeof module !== 'undefined') {
-
 	exports = module.exports = useful.Range;
-
 }
-
