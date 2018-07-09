@@ -1,26 +1,13 @@
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Range = useful.Range || function () {};
-
-// extend the constructor
-useful.Range.prototype.Events = function (parent) {
+// extend the class
+Range.prototype.Events = function (parent) {
 
 	// PROPERTIES
-	
-	"use strict";
+
 	this.parent = parent;
 	this.config = parent.config;
 
 	// METHODS
-	
+
 	this.mouse = function () {
 		var _this = this, element = this.config.container;
 		// initialise coordinates
@@ -83,8 +70,3 @@ useful.Range.prototype.Events = function (parent) {
 	// go
 	this.mouse();
 };
-
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range.Events;
-}

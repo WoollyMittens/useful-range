@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>useful-color.js: Range Selector</title>
+		<title>range.js: Range Selector</title>
 		<style>
 			html { font-family:Sans-Serif; font-size:75%; height:100%; }
 			body { _height:100%; line-height:180%; margin:0; min-height:100%; padding:1%; }
@@ -28,7 +28,7 @@
 			<aside>
 
 				<!-- Cut below this -->
-				<style>@import url("./css/useful-range.css");</style>
+				<style>@import url("./css/range.css");</style>
 				<form>
 					<label>
 						Native:
@@ -39,7 +39,7 @@
 						<input name="examplerange" pattern="^.+$" class="range" type="text" title="Pick a range" value=""  min="0" max="100"/>
 					</label>
 				</form>
-				<script src="./js/useful-range.js"></script>
+				<script src="./js/range.js"></script>
 				<script>
 					// example event handler
 					updateValue = function (event, element) {
@@ -53,7 +53,7 @@
 				<script>
 				//<!--
 					// create new instances of the script
-					var ranges = new useful.Range().init({
+					var ranges = new Range({
 						'elements' : document.querySelectorAll('input.range'),
 						'title' : '{value}% ({min}-{max})'
 					});

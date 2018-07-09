@@ -1,4 +1,4 @@
-# useful.range.js: Range input element
+# range.js: Range input element
 
 An alternative for the HTML5 range input element.
 
@@ -18,18 +18,10 @@ This include can be added to the header or placed inline before the script is in
 <script src="./js/useful-range.js"></script>
 ```
 
-To enable the use of HTML5 tags in Internet Explorer 8 and lower, include *html5.js*.
-
-```html
-<!--[if lte IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-```
-
 ## How to start the script
 
 ```javascript
-var ranges = new useful.Range().init({
+var ranges = new Range({
 	'elements' : document.querySelectorAll('.classname');
 	'title' : '{value}% ({min}-{max})',
 	'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)

@@ -1,28 +1,15 @@
-/*
-	Source:
-	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Range = useful.Range || function () {};
-
-// extend the constructor
-useful.Range.prototype.Main = function (config, context) {
+// extend the class
+Range.prototype.Main = function (config, context) {
 
 	// PROPERTIES
-	
-	"use strict";
+
 	this.parent = parent;
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
 
 	// METHODS
-	
+
 	this.init = function () {
 		// build the interface
 		this.setup();
@@ -31,7 +18,7 @@ useful.Range.prototype.Main = function (config, context) {
 		// return the object
 		return this;
 	};
-	
+
 	this.setup = function () {
 		// set the initial value, if there isn't one
 		this.element.value = this.element.value || 0;
@@ -62,7 +49,7 @@ useful.Range.prototype.Main = function (config, context) {
 			_this.update();
 		}, 500);
 	};
-	
+
 	this.update = function () {
 		var min, max, value, steps, range;
 		// get the attributes from the input element
@@ -71,7 +58,7 @@ useful.Range.prototype.Main = function (config, context) {
 		steps = parseFloat(this.element.getAttribute('steps')) || 0;
 		range = max - min;
 		// get the offset of the element
-		this.config.offset = useful.positions.object(this.config.container);
+		this.config.offset = positions.object(this.config.container);
 		// get the existing value or the fresh input
 		value = (this.config.x === null) ?
 			parseFloat(this.element.value) :
@@ -106,9 +93,8 @@ useful.Range.prototype.Main = function (config, context) {
 			this.element.dispatchEvent(evt);
 		}
 	};
-};
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range.Main;
-}
+	// EVENTS
+
+	this.init();
+};
