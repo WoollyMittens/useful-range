@@ -34,6 +34,5 @@ var Range = function (config) {
 };
 
 // return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = Range;
-}
+if (typeof define != 'undefined') define(['range'], function () { return Range });
+if (typeof module != 'undefined') module.exports = Range;
