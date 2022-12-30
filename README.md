@@ -2,8 +2,6 @@
 
 An alternative for the HTML5 range input element.
 
-Try the <a href="http://www.woollymittens.nl/default.php?url=useful-range">demo</a>.
-
 ## How to include the script
 
 The stylesheet is best included in the header of the document.
